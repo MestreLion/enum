@@ -15,7 +15,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program. See <http://www.gnu.org/licenses/gpl.html>
 
-'''Basic replacement of enum module for Python < 3.4'''
+'''Basic implementation of enum module for Python 2 and 3'''
 
 __all__ = ['Enum']  # not necessary as Enum is the only non-__*__ name
 
@@ -67,20 +67,11 @@ if sys.version_info[0] < 3:
         '''A basic implementation of Enums for Python 2'''
         __metaclass__ = _meta
 
-# Python 3.1 - 3.3
-elif sys.version_info[1] < 4:
+# Python 3
+else:
     # Python 2 see Python 3 metaclass declaration as SyntaxError, hence exec()
     exec("class Enum(_base, metaclass=_meta):"
-         "'''A basic implementation of Enums for Python 3 < 3.4'''")
-
-# Python 3.4 onwards, wrap standard library
-else:
-    try:
-        import enum
-        Enum = enum.Enum
-        del enum
-    except ImportError:
-        raise
+         "'''A basic implementation of Enums for Python 3'''")
 
 del sys, _base, _meta
 
