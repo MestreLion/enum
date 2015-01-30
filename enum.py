@@ -90,16 +90,31 @@ if __name__ == '__main__':
         RED      =  1
         GREEN    =  2
         BLUE     =  3
-        NICE_ONE =  5
+        NICE_ONE =  4
 
         @classmethod
         def name(cls, v):
             '''Optional custom name function'''
-            if   v == cls.BLACK: return "is back!"
-            elif v == cls.WHITE: return "Delight"
+            if v == cls.BLACK: return "is back!"
+            if v == cls.WHITE: return "Delight"
 
             # Uses default name as fallback for members not listed above
-            else: return super(Color, cls).name(v)
+            return super(Color, cls).name(v)
+
+        @classmethod
+        def counterpart(cls, v):
+            '''Custom method example'''
+            if v in [cls.DEFAULT,
+                     cls.NICE_ONE]: return v
+            if v ==  cls.BLACK:     return cls.WHITE
+            if v ==  cls.WHITE:     return cls.BLACK
+            if v ==  cls.BLUE:      return cls.RED
+
+            return v + 1
+
+        # Custom methods must be declared so they don't get selected as members
+        # Method 'name' was automatically excluded, no need to declare it
+        __non_members__ = ['counterpart']
 
     # Value and types
     print(Color.RED, type(Color.RED))  # 1, <type 'int'>
@@ -130,6 +145,10 @@ if __name__ == '__main__':
 
     # Member count
     print("colors in a rainbow:", len(Color))  # 7
+
+    # Custom methods
+    for color in Color:
+        print(Color.name(color), "<=>", Color.name(Color.counterpart(color)))
 
     # Class type, inheritance, structure
     print (type(Color), "is Enum?", issubclass(Color, Enum))  # <class '__main__._meta'>, True
