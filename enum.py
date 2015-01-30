@@ -22,13 +22,12 @@ __all__ = ['Enum']  # not necessary as Enum is the only non-__*__ name
 import sys
 
 class _meta(type):
-    def __iter__(self):  # "self" for a metaclass refers to classes, not instances
+    def __iter__(cls):
         '''Yield members sorted by value, not declaration order'''
-        for value in sorted(self.members().values()):
-            yield value
+        return iter(sorted(cls.members().values()))
 
-    def __len__(self):
-        return len(self.members())
+    def __len__(cls):
+        return len(cls.members())
 
 
 class _base(object):
