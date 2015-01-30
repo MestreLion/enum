@@ -24,28 +24,28 @@ import sys
 class _meta(type):
 
     @property
-    def members(cls):
+    def __members__(cls):
         return {k: v for k, v in cls.__dict__.items()
                 if  not k.startswith("_")
                 and not cls._callable(getattr(cls, k))}
 
     def __iter__(cls):
         '''Yield members sorted by value, not declaration order'''
-        return iter(sorted(cls.members.values()))
+        return iter(sorted(cls.__members__.values()))
 
     def __getitem__(cls, k):
         try:
-            return cls.members[k]
+            return cls.__members__[k]
         except KeyError:
             # re-raise as AttributeError, for consistency with Enum.VALUE
             raise AttributeError("type object '{}' has no attribute '{}'".
                                  format(cls.__name__, k))
 
     def __contains__(cls, k):
-        return k in cls.members
+        return k in cls.__members__
 
     def __len__(cls):
-        return len(cls.members)
+        return len(cls.__members__)
 
 
 class _base(object):
@@ -68,7 +68,7 @@ class _base(object):
         Enums can customize member names by overriding this method
         '''
         # value not handled in subclass name()
-        for k, v in cls.members.items():
+        for k, v in cls.__members__.items():
             if v == value:
                 return k.replace('_', ' ').title()
 
@@ -168,13 +168,7 @@ if __name__ == '__main__':
     print("colors in a rainbow:", len(Color))  # 7
 
     # Using members dict directly
-    try:
-        Color.members["BROWN"] = 11  # silently ignored
-        Color.members.update({"BROWN": 12})  # keep trying...
-        Color.members = {"BROWN": 13}  # That's bad luck!
-    except AttributeError as e:
-        print("members is not meant to be written that way:", repr(e))
-    print("members:", Color.members)
+    print("members:", Color.__members__)
 
     # Handling exceptions
     try:
@@ -191,7 +185,7 @@ if __name__ == '__main__':
         print("Members only!", repr(e))  # AttributeError
 
     # Class type, inheritance, structure
-    print (type(Color), "is Enum?", issubclass(Color, Enum))  # <class '__main__._meta'>, True
+    print (type(Color), "is an Enum?", issubclass(Color, Enum))  # <class '__main__._meta'>, True
     print("MRO:", Color.mro())   # Color, Enum, _base, object
     print("class:", dir(Color))
 
