@@ -58,19 +58,14 @@ class _base(object):
             AnEnum.name(AnEnum.AN_ORDINARY_MEMBER) => "An Ordinary Member"
         Enums can customize member names by overriding this method
         '''
-        # value as string, if it matches an enum attribute.
-        # Allows short usage as Enum.name("VALUE") besides Enum.name(Enum.VALUE)
-        if hasattr(cls, str(value)):
-            return cls.name(getattr(cls, value, None))
-
         # value not handled in subclass name()
-        for k, v in cls.__dict__.items():
+        for k, v in cls.members().items():
             if v == value:
                 return k.replace('_', ' ').title()
 
-        # value not found
-        raise KeyError("Value '%s' not found in enum '%s'" %
-                       (value, cls.__name__))
+        # Value not find. Try again using value as member name.
+        # Allows usage as Enum.name("VALUE") besides Enum.name(Enum.VALUE)
+        return cls.name(cls[value])
 
 
 # Python 2
@@ -143,7 +138,7 @@ if __name__ == '__main__':
 
     # Custom names
     print("Black", Color.name(Color.BLACK),  # "is back!"
-          "White", Color.name(Color.WHITE))  # "Delight"
+          "White", Color.name("WHITE"))      # "Delight"
 
     # Membership
     print("is green a color?", Color.GREEN in Color)  # True
