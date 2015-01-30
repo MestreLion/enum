@@ -34,6 +34,9 @@ class _meta(type):
             raise AttributeError("type object '{}' has no attribute '{}'".
                                  format(cls.__name__, k))
 
+    def __contains__(cls, k):
+        return k in cls.members()
+
     def __len__(cls):
         return len(cls.members())
 
