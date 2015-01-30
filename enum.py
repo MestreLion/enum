@@ -26,6 +26,9 @@ class _meta(type):
         '''Yield members sorted by value, not declaration order'''
         return iter(sorted(cls.members().values()))
 
+    def __getitem__(cls, k):
+        return cls.members()[k]
+
     def __len__(cls):
         return len(cls.members())
 
@@ -125,7 +128,7 @@ if __name__ == '__main__':
             return v + 1 if v + 1 in cls else cls.DEFAULT
 
     # Value and types
-    print(Color.RED, type(Color.RED))  # 1, <type 'int'>
+    print(Color.RED, Color["RED"], type(Color.RED))  # 1, 1, <type 'int'>
 
     # Testing values
     print("Red is the new Black?",
