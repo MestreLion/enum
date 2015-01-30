@@ -62,7 +62,7 @@ class _base(object):
     @classmethod
     def name(cls, value):
         '''
-        Fallback for getting a member "name"
+        Fallback for getting a friendly member name
         Return a titled string with underscores replaced by spaces
             AnEnum.name(AnEnum.AN_ORDINARY_MEMBER) => "An Ordinary Member"
         Enums can customize member names by overriding this method
@@ -75,6 +75,11 @@ class _base(object):
         # Value not find. Try again using value as member name.
         # Allows usage as Enum.name("VALUE") besides Enum.name(Enum.VALUE)
         return cls.name(cls[value])
+
+    @classmethod
+    def members(cls):
+        '''Return a list of members as strings, in value order'''
+        return sorted(cls.__members__, key=cls.__members__.get)
 
 
 # Python 2
@@ -167,8 +172,9 @@ if __name__ == '__main__':
     # Member count
     print("colors in a rainbow:", len(Color))  # 7
 
-    # Using members dict directly
-    print("members:", Color.__members__)
+    # Using members list and internal dict
+    print("members:", Color.members())
+    print("members dict:", Color.__members__)
 
     # Handling exceptions
     try:
