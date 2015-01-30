@@ -22,7 +22,6 @@ __all__ = ['Enum']  # not necessary as Enum is the only non-__*__ name
 import sys
 
 class _meta(type):
-
     @property
     def __members__(cls):
         return {k: v for k, v in cls.__dict__.items()
@@ -78,7 +77,10 @@ class _base(object):
 
     @classmethod
     def members(cls):
-        '''Return a list of members as strings, in value order'''
+        '''
+        Return a list of member attribute names (strings),
+        ordered by value to make it consistent with class iterator
+        '''
         return sorted(cls.__members__, key=cls.__members__.get)
 
 
@@ -157,9 +159,11 @@ if __name__ == '__main__':
     # Membership
     print("is green a color?", Color.GREEN in Color)  # True
 
-    # Iterating - automatically sorted by value
-    for color in Color:
-        print(color, Color.name(color))
+    # Iterating the class yields values,
+    # iterating on members() yields member attribute names (as strings)
+    # Both automatically sorted by value, for consistency with each other
+    for color, member in zip(Color, Color.members()):
+        print(color, member, Color.name(color))
 
     # Custom methods
     for color in Color:
@@ -172,8 +176,7 @@ if __name__ == '__main__':
     # Member count
     print("colors in a rainbow:", len(Color))  # 7
 
-    # Using members list and internal dict
-    print("members:", Color.members())
+    # Using internal dict
     print("members dict:", Color.__members__)
 
     # Handling exceptions
@@ -196,5 +199,5 @@ if __name__ == '__main__':
     print("class:", dir(Color))
 
     # Module cleanness
-    del Color, color
+    del Color, color, member
     print("module:", globals())  # only Enum and the default __*__
