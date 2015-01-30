@@ -161,6 +161,20 @@ if __name__ == '__main__':
     # Using members() directly
     print("members:", Color.members())
 
+    # Handling exceptions
+    try:
+        print(Color.BROWN)
+    except Exception as e:
+        print(repr(e))  # AttributeError
+    try:
+        print(Color['BROWN'])
+    except Exception as e:
+        print(repr(e))  # KeyError
+    try:
+        print(Color['name'])
+    except Exception as e:
+        print("Members only!", repr(e))  # KeyError
+
     # Class type, inheritance, structure
     print (type(Color), "is Enum?", issubclass(Color, Enum))  # <class '__main__._meta'>, True
     print("MRO:", Color.mro())   # Color, Enum, _base, object
