@@ -118,13 +118,11 @@ if __name__ == '__main__':
         @classmethod
         def counterpart(cls, v):
             '''Custom method example'''
-            if v in [cls.DEFAULT,
-                     cls.NICE_ONE]: return v
-            if v ==  cls.BLACK:     return cls.WHITE
-            if v ==  cls.WHITE:     return cls.BLACK
-            if v ==  cls.BLUE:      return cls.RED
+            if v == cls.DEFAULT: return v
+            if v == cls.BLACK:   return cls.WHITE
+            if v == cls.WHITE:   return cls.BLACK
 
-            return v + 1
+            return v + 1 if v + 1 in cls else cls.DEFAULT
 
     # Value and types
     print(Color.RED, type(Color.RED))  # 1, <type 'int'>
@@ -135,11 +133,9 @@ if __name__ == '__main__':
           Color.BLACK == 0)  # True
 
     # Names
-    print(Color.name(1))           # "Red"
-    print(Color.name("GREEN"))     # "Green"
-    print(Color.name(Color.BLUE))  # "Blue"
-
-    # Auto-name formatting
+    print(Color.name(1))               # "Red"
+    print(Color.name("GREEN"))         # "Green"
+    print(Color.name(Color.BLUE))      # "Blue"
     print(Color.name(Color.NICE_ONE))  # "Nice One"
 
     # Custom names
@@ -153,15 +149,19 @@ if __name__ == '__main__':
     for color in Color:
         print(color, Color.name(color))
 
+    # Custom methods
+    for color in Color:
+        print(Color.name(color), "<=>", Color.name(Color.counterpart(color)))
+
+    # Adding and removing members
+    Color.YELLOW = 5
+    del Color.NICE_ONE
+
     # Member count
     print("colors in a rainbow:", len(Color))  # 7
 
     # Using members() directly
     print("members:", Color.members())
-
-    # Custom methods
-    for color in Color:
-        print(Color.name(color), "<=>", Color.name(Color.counterpart(color)))
 
     # Class type, inheritance, structure
     print (type(Color), "is Enum?", issubclass(Color, Enum))  # <class '__main__._meta'>, True
