@@ -22,22 +22,32 @@ __all__ = ['Enum']  # not necessary as Enum is the only non-__*__ name
 import sys
 
 class _meta(type):
-    def _members(self):
-        return [_ for _ in self.__dict__.items()
-                if  not _[0].startswith("_")
-                and not _[0] in ['name'] + getattr(self, '__non_members__', [])
-                ]
-
     def __iter__(self):  # "self" for a metaclass refers to classes, not instances
         '''Yield members sorted by value, not declaration order'''
-        for value in sorted([_[1] for _ in self._members()]):
+        for value in sorted(self.members().values()):
             yield value
 
     def __len__(self):
-        return len(self._members())
+        return len(self.members())
 
 
 class _base(object):
+    @staticmethod
+    def _callable(obj):
+        '''Helper wrapper for callable() that works on Python 3.0 and 3.1'''
+        try:
+            return callable(obj)
+        except NameError:
+            # Python 3.0 and 3.1 has no callable()
+            # which is a tiny safer than hasattr approach
+            return hasattr(obj, "__call__")
+
+    @classmethod
+    def members(cls):
+        return {k: v for k, v in cls.__dict__.items()
+                if  not k.startswith("_")
+                and not cls._callable(getattr(cls, k))}
+
     @classmethod
     def name(cls, value):
         '''
@@ -83,7 +93,9 @@ if __name__ == '__main__':
         '''Enum class example'''
 
         # Declaration order is irrelevant, sorting will always be by value
-        # Values don't have to be numbers, but in Python 3 must be homogeneous
+        # Values can be any non-callable, and in Python 3 must be comparable
+        # Bottom line: don't make an Enum of functions,
+        # and don't mix numbers with strings
         BLACK    =  0
         WHITE    = 10  # This will sort last
         DEFAULT  = -1  # This will sort first
@@ -91,6 +103,9 @@ if __name__ == '__main__':
         GREEN    =  2
         BLUE     =  3
         NICE_ONE =  4
+
+        # Methods are not considered members
+        # That's why member values cannot be callables
 
         @classmethod
         def name(cls, v):
@@ -111,10 +126,6 @@ if __name__ == '__main__':
             if v ==  cls.BLUE:      return cls.RED
 
             return v + 1
-
-        # Custom methods must be declared so they don't get selected as members
-        # Method 'name' was automatically excluded, no need to declare it
-        __non_members__ = ['counterpart']
 
     # Value and types
     print(Color.RED, type(Color.RED))  # 1, <type 'int'>
@@ -146,6 +157,9 @@ if __name__ == '__main__':
     # Member count
     print("colors in a rainbow:", len(Color))  # 7
 
+    # Using members() directly
+    print("members:", Color.members())
+
     # Custom methods
     for color in Color:
         print(Color.name(color), "<=>", Color.name(Color.counterpart(color)))
@@ -153,7 +167,7 @@ if __name__ == '__main__':
     # Class type, inheritance, structure
     print (type(Color), "is Enum?", issubclass(Color, Enum))  # <class '__main__._meta'>, True
     print("MRO:", Color.mro())   # Color, Enum, _base, object
-    print("class:", dir(Color))  # only members, 'name', and the default __*__
+    print("class:", dir(Color))
 
     # Module cleanness
     del Color, color
