@@ -27,7 +27,12 @@ class _meta(type):
         return iter(sorted(cls.members().values()))
 
     def __getitem__(cls, k):
-        return cls.members()[k]
+        try:
+            return cls.members()[k]
+        except KeyError:
+            # re-raise as AttributeError, for consistency with Enum.VALUE
+            raise AttributeError("type object '{}' has no attribute '{}'".
+                                 format(cls.__name__, k))
 
     def __len__(cls):
         return len(cls.members())
@@ -169,11 +174,11 @@ if __name__ == '__main__':
     try:
         print(Color['BROWN'])
     except Exception as e:
-        print(repr(e))  # KeyError
+        print(repr(e))  # Also AttributeError, for consistency
     try:
-        print(Color['name'])
+        print(Color['name']) # Color.name exists but is not a member
     except Exception as e:
-        print("Members only!", repr(e))  # KeyError
+        print("Members only!", repr(e))  # AttributeError
 
     # Class type, inheritance, structure
     print (type(Color), "is Enum?", issubclass(Color, Enum))  # <class '__main__._meta'>, True
