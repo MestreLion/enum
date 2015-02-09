@@ -32,6 +32,11 @@ class _meta(type):
         '''Yield members sorted by value, not declaration order'''
         return iter(sorted(self.__members__.values()))
 
+    def __reversed__(self):
+        '''Yield members sorted by descending value order'''
+        return reversed(tuple(self))
+        # tuple() is required to create a sequence out of the Enum
+
     def __getitem__(self, k):
         try:
             return self.__members__[k]
@@ -192,6 +197,13 @@ if __name__ == '__main__':
         print(Color['name']) # Color.name exists but is not a member
     except Exception as e:
         print("Members only!", repr(e))  # AttributeError
+    try:
+        print(Color[2])  # Not allowed
+    except Exception as e:
+        print("I am NOT a sequence!", repr(e))
+
+    # Reverse
+    print("But I have built-in reversed:", tuple(reversed(Color)))
 
     # Class type, inheritance, structure
     print (type(Color), "is an Enum?", issubclass(Color, Enum))  # <class '__main__._meta'>, True
