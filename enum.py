@@ -23,28 +23,28 @@ import sys
 
 class _meta(type):
     @property
-    def __members__(cls):
-        return {k: v for k, v in cls.__dict__.items()
+    def __members__(self):
+        return {k: v for k, v in self.__dict__.items()
                 if  not k.startswith("_")
-                and not cls._callable(getattr(cls, k))}
+                and not self._callable(getattr(self, k))}
 
-    def __iter__(cls):
+    def __iter__(self):
         '''Yield members sorted by value, not declaration order'''
-        return iter(sorted(cls.__members__.values()))
+        return iter(sorted(self.__members__.values()))
 
-    def __getitem__(cls, k):
+    def __getitem__(self, k):
         try:
-            return cls.__members__[k]
+            return self.__members__[k]
         except KeyError:
             # re-raise as AttributeError, for consistency with Enum.VALUE
             raise AttributeError("type object '{}' has no attribute '{}'".
-                                 format(cls.__name__, k))
+                                 format(self.__name__, k))
 
-    def __contains__(cls, k):
-        return k in cls.__members__
+    def __contains__(self, k):
+        return k in self.__members__
 
-    def __len__(cls):
-        return len(cls.__members__)
+    def __len__(self):
+        return len(self.__members__)
 
 
 class _base(object):
