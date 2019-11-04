@@ -206,7 +206,7 @@ if __name__ == '__main__':
     print("But I have built-in reversed:", tuple(reversed(Color)))
 
     # Class type, inheritance, structure
-    print (type(Color), "is an Enum?", issubclass(Color, Enum))  # <class '__main__._meta'>, True
+    print(type(Color), "is an Enum?", issubclass(Color, Enum))  # <class '__main__._meta'>, True
     print("MRO:", Color.mro())   # Color, Enum, _base, object
     print("class:", dir(Color))
 
